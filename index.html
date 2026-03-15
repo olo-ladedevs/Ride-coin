@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>$RIDE — Got Some Change?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne+Mono&display=swap" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne+Mono&display=swap');
+
+    :root {
+      --target-red: #CC0000;
+      --target-orange: #E8650A;
+      --pony-orange: #F4830A;
+      --white: #F5F5F0;
+      --off-white: #ECECEC;
+      --light-gray: #D8D8D8;
+      --steel: #B0B8C1;
+      --dark: #1A1A1A;
+      --aisle-blue: #1B4F8A;
+      --fluorescent: #E8F4FF;
+      --price-yellow: #FFE600;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--white);
+      color: var(--dark);
+      font-family: 'Familjen Grotesk', sans-serif;
+      overflow-x: hidden;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext y='28' font-size='26'%3E🐎%3C/text%3E%3C/svg%3E") 16 16, auto;
+    }
+
+    /* ── FLUORESCENT FLICKER OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(232,244,255,0.06) 0%, transparent 50%, rgba(232,244,255,0.04) 100%);
+      pointer-events: none;
+      z-index: 9997;
+      animation: flicker 8s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 95%, 100% { opacity: 1; }
+      96% { opacity: 0.85; }
+      97% { opacity: 1; }
+      98% { opacity: 0.9; }
+      99% { opacity: 1; }
+    }
+
+    /* ── CEILING TILES ── */
+    .ceiling {
+      width: 100%;
+      height: 60px;
+      background:
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 60px),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 60px),
+        var(--off-white);
+      border-bottom: 3px solid var(--light-gray);
+    }
+
+    /* ── FLUORESCENT LIGHT BARS ── */
+    .light-bars {
+      width: 100%;
+      background: var(--off-white);
+      padding: 0.4rem 0;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      border-bottom: 2px solid var(--light-gray);
+    }
+
+    .light-bar {
+      width: 120px;
+      height: 14px;
+      background: linear-gradient(90deg, #ddeeff, #ffffff, #ddeeff);
+      border-radius: 2px;
+      box-shadow: 0 0 20px 4px rgba(200,230,255,0.8), 0 0 40px 10px rgba(200,230,255,0.3);
+      animation: lightpulse 4s ease-in-out infinite;
+    }
+
+    .light-bar:nth-child(2) { animation-delay: 1.5s; }
+    .light-bar:nth-child(3) { animation-delay: 0.8s; }
+
+    @keyframes lightpulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.88; }
+    }
+
+    /* ── AISLE SIGN ── */
+    .aisle-sign {
+      background: var(--aisle-blue);
+      color: #fff;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(0.7rem, 2vw, 1rem);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 0.5rem 2rem;
+      border-bottom: 4px solid var(--dark);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--target-red);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      height: 56px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+
+    .nav-logo {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.8rem;
+      color: #fff;
+      letter-spacing: 2px;
+    }
+
+    .nav-logo span {
+      display: inline-block;
+      background: var(--price-yellow);
+      color: var(--target-red);
+      padding: 0 0.4rem;
+      margin-left: 0.2rem;
+      font-size: 0.9rem;
+      vertical-align: middle;
+      transform: rotate(-2deg);
+      font-family: 'Syne Mono', monospace;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: background 0.15s;
+    }
+
+    .nav-links a:hover { background: rgba(255,255,255,0.15); }
+
+    /* ── HERO ── */
+    #hero {
+      background:
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.025) 0px, rgba(0,0,0,0.025) 1px, transparent 1px, transparent 80px),
+        linear-gradient(180deg, #f0f0eb 0%, #e8e8e0 100%);
+      padding: 5rem 2rem 5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 8px;
+      background: repeating-linear-gradient(90deg,
+        var(--target-red) 0px, var(--target-red) 20px,
+        #fff 20px, #fff 40px
+      );
+    }
+
+    .price-tag {
+      background: var(--price-yellow);
+      color: var(--dark);
+      font-family: 'Syne Mono', monospace;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.3rem 1rem;
+      border: 2px solid var(--dark);
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      transform: rotate(-1.5deg);
+      box-shadow: 3px 3px 0 var(--dark);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(4.5rem, 16vw, 12rem);
+      line-height: 0.85;
+      color: var(--target-red);
+      letter-spacing: -2px;
+      animation: fadeUp 0.7s 0.1s ease both;
+      opacity: 0;
+      animation-fill-mode: forwards;
+      text-shadow: 5px 5px 0 rgba(204,0,0,0.2);
+    }
+
+    .hero-tagline {
+      font-family: 'Familjen Grotesk', sans-serif;
+      font-size: clamp(1.4rem, 4vw, 2.8rem);
+      font-weight: 900;
+      color: var(--dark);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin: 0.5rem 0 2rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    .hero-tagline em { font-style: normal; color: var(--target-red); }
+
+    .shelf-label {
+      background: var(--target-orange);
+      color: #fff;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      padding: 0.35rem 1.2rem;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.9s 0.3s ease both;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 1s 0.4s ease both;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    .btn {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 3px;
+      text-decoration: none;
+      padding: 0.8rem 2rem;
+      border: 3px solid var(--dark);
+      display: inline-block;
+      transition: all 0.15s;
+      box-shadow: 4px 4px 0 var(--dark);
+      text-transform: uppercase;
+    }
+
+    .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--dark); }
+    .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--dark); }
+
+    .btn-red { background: var(--target-red); color: #fff; }
+    .btn-outline { background: #fff; color: var(--dark); }
+    .btn-white { background: #fff; color: var(--target-red); border-color: #fff; }
+    .btn-white:hover { background: var(--price-yellow); color: var(--dark); border-color: var(--price-yellow); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); }
+    .btn-outline-white { background: transparent; color: #fff; border-color: #fff; }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+
+    /* ── RECEIPT TICKER ── */
+    .receipt-tape {
+      background: var(--dark);
+      overflow: hidden;
+      padding: 0.5rem 0;
+      border-top: 3px solid var(--target-red);
+      border-bottom: 3px solid var(--target-red);
+    }
+
+    .receipt-inner {
+      display: inline-block;
+      white-space: nowrap;
+      animation: ticker 22s linear infinite;
+    }
+
+    .receipt-inner span {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.9rem;
+      letter-spacing: 3px;
+      color: var(--price-yellow);
+      padding: 0 2rem;
+    }
+
+    .receipt-inner span.dot { color: var(--target-red); padding: 0 0.5rem; }
+
+    /* ── CONTRACT ── */
+    #contract {
+      background: var(--price-yellow);
+      border-top: 4px solid var(--dark);
+      border-bottom: 4px solid var(--dark);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .receipt-header {
+      font-family: 'Syne Mono', monospace;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .ca-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: #fff;
+      border: 3px solid var(--dark);
+      padding: 0.9rem 1.5rem;
+      max-width: 680px;
+      margin: 0 auto 0.75rem;
+      box-shadow: 5px 5px 0 var(--dark);
+    }
+
+    .ca-text {
+      font-family: 'Syne Mono', monospace;
+      font-size: clamp(0.55rem, 1.8vw, 0.85rem);
+      color: var(--dark);
+      word-break: break-all;
+      font-weight: 700;
+    }
+
+    .copy-btn {
+      background: var(--target-red);
+      color: #fff;
+      border: 2px solid var(--dark);
+      padding: 0.4rem 1rem;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 2px 2px 0 var(--dark);
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover { background: #aa0000; }
+    .copy-btn.copied { background: #1a8a3a; }
+
+    .dyor {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      color: rgba(26,26,26,0.45);
+      text-transform: uppercase;
+    }
+
+    /* ── SECTION HELPERS ── */
+    .section-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-aisle {
+      display: inline-block;
+      background: var(--aisle-blue);
+      color: #fff;
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      line-height: 1;
+      color: var(--dark);
+      margin-bottom: 2rem;
+      letter-spacing: -1px;
+    }
+
+    .section-title em { font-style: normal; color: var(--target-red); }
+
+    /* ── ABOUT ── */
+    #about { background: var(--off-white); border-top: 1px solid var(--light-gray); border-bottom: 1px solid var(--light-gray); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-body p {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.8;
+      color: #444;
+      margin-bottom: 1rem;
+    }
+
+    .about-body p strong { color: var(--target-red); font-weight: 700; }
+
+    .shelf-tags { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .shelf-tag {
+      background: #fff;
+      border: 2px solid var(--light-gray);
+      border-left: 6px solid var(--target-red);
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.06);
+      transition: border-left-color 0.2s;
+    }
+
+    .shelf-tag:hover { border-left-color: var(--pony-orange); }
+
+    .shelf-tag-label {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    .shelf-tag-val {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 2rem;
+      color: var(--dark);
+      letter-spacing: -1px;
+    }
+
+    /* ── VIDEOS ── */
+    #videos { background: #fff; border-top: 1px solid var(--light-gray); }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .video-card {
+      position: relative;
+      background: var(--off-white);
+      border: 2px solid var(--light-gray);
+      overflow: hidden;
+      aspect-ratio: 9/16;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .video-card.featured {
+      grid-column: span 2;
+      aspect-ratio: 16/9;
+    }
+
+    .video-card:hover {
+      border-color: var(--target-red);
+      box-shadow: 0 0 0 3px rgba(204,0,0,0.15);
+    }
+
+    .video-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .video-card::after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: var(--target-red);
+      color: #fff;
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.25rem 0.5rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .video-card:hover::after { opacity: 1; }
+
+    .video-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: repeating-linear-gradient(45deg, var(--off-white), var(--off-white) 8px, var(--light-gray) 8px, var(--light-gray) 16px);
+      gap: 0.5rem;
+    }
+
+    .video-placeholder .vp-icon { font-size: 2.5rem; }
+    .video-placeholder p {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: #aaa;
+      text-transform: uppercase;
+    }
+
+    /* ── TOKENOMICS ── */
+    #tokenomics { background: var(--off-white); border-top: 1px solid var(--light-gray); }
+
+    .receipt {
+      background: #fff;
+      border: 3px solid var(--dark);
+      max-width: 480px;
+      margin: 2rem auto 0;
+      box-shadow: 8px 8px 0 var(--dark);
+      font-family: 'Syne Mono', monospace;
+    }
+
+    .receipt-top {
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      letter-spacing: 4px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .receipt-body { padding: 1.5rem; }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px dashed var(--light-gray);
+      padding: 0.6rem 0;
+      font-size: 0.85rem;
+    }
+
+    .receipt-row:last-of-type { border-bottom: none; }
+
+    .r-label { color: #777; letter-spacing: 1px; text-transform: uppercase; font-size: 0.75rem; }
+    .r-val { font-weight: 700; font-size: 1.1rem; color: var(--dark); }
+    .r-val.green { color: #1a8a3a; }
+
+    .receipt-total {
+      border-top: 3px solid var(--dark);
+      background: var(--price-yellow);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 2px;
+    }
+
+    /* ── HOW TO BUY ── */
+    #howtobuy { background: #fff; border-top: 1px solid var(--light-gray); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .step {
+      background: var(--off-white);
+      border: 2px solid var(--light-gray);
+      border-top: 5px solid var(--target-red);
+      padding: 1.8rem 1.5rem;
+      position: relative;
+      transition: border-top-color 0.2s, box-shadow 0.2s;
+    }
+
+    .step:hover { border-top-color: var(--pony-orange); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+
+    .step-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 4rem;
+      color: rgba(204,0,0,0.08);
+      position: absolute;
+      top: 0.5rem;
+      right: 1rem;
+      line-height: 1;
+    }
+
+    .step-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+
+    .step h3 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .step p { font-size: 0.9rem; line-height: 1.7; color: #666; }
+    .step p strong { color: var(--target-red); }
+
+    /* ── COMMUNITY ── */
+    #community {
+      background: var(--target-red);
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+
+    #community .section-title { color: #fff; }
+    #community .section-title em { color: var(--price-yellow); }
+
+    #community p {
+      color: rgba(255,255,255,0.8);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.8;
+    }
+
+    .community-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── SHELF DIVIDER ── */
+    .shelf-divider {
+      height: 12px;
+      background: repeating-linear-gradient(90deg,
+        var(--target-red) 0px, var(--target-red) 24px,
+        #fff 24px, #fff 48px
+      );
+      border-top: 2px solid var(--dark);
+      border-bottom: 2px solid var(--dark);
+    }
+
+    /* ── FOOTER ── */
+    footer { background: var(--dark); padding: 2rem; text-align: center; }
+
+    footer p {
+      font-family: 'Syne Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    footer strong { color: var(--price-yellow); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .reveal-children > * {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .reveal-children.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0s; }
+    .reveal-children.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.1s; }
+    .reveal-children.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.2s; }
+    .reveal-children.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.3s; }
+    .reveal-children.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.4s; }
+
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .video-grid { grid-template-columns: repeat(2, 1fr); }
+      .video-card.featured { grid-column: span 2; aspect-ratio: 4/3; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 1rem; }
+      .nav-links { gap: 0; }
+      .nav-links a { font-size: 0.6rem; padding: 0.4rem 0.45rem; letter-spacing: 1px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STORE ATMOSPHERE -->
+  <div class="ceiling"></div>
+  <div class="light-bars">
+    <div class="light-bar"></div>
+    <div class="light-bar"></div>
+    <div class="light-bar"></div>
+    <div class="light-bar"></div>
+    <div class="light-bar"></div>
+  </div>
+  <div class="aisle-sign">🐎 &nbsp; Aisle 1 — Memecoins &nbsp;|&nbsp; Pony Rides &nbsp; 🪙</div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">$RIDE <span>ON SOLANA</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#videos">Memes</a></li>
+      <li><a href="#tokenomics">Token</a></li>
+      <li><a href="#howtobuy">Buy</a></li>
+      <li><a href="#community">Community</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="price-tag">🐎 Ape Now</div>
+    <h1 class="hero-title">$RIDE</h1>
+    <p class="hero-tagline">Got <em>Some</em> Change?</p>
+    <div class="shelf-label">🐎 Now Available in the Memecoin Aisle</div>
+    <div class="hero-buttons">
+      <a href="#howtobuy" class="btn btn-red">Buy $RIDE</a>
+      <a href="https://twitter.com/i/communities/2032668023245647904" target="_blank" rel="noopener" class="btn btn-outline">X Community</a>
+    </div>
+  </section>
+
+  <!-- RECEIPT TICKER -->
+  <div class="receipt-tape">
+    <div class="receipt-inner">
+      <span>$RIDE</span><span class="dot">•••</span>
+      <span>GOT SOME CHANGE?</span><span class="dot">•••</span>
+      <span>SOLANA</span><span class="dot">•••</span>
+      <span>RIDE OR DIE</span><span class="dot">•••</span>
+      <span>25¢ TO MOON</span><span class="dot">•••</span>
+      <span>STRAP IN</span><span class="dot">•••</span>
+      <span>$RIDE</span><span class="dot">•••</span>
+      <span>GOT SOME CHANGE?</span><span class="dot">•••</span>
+      <span>SOLANA</span><span class="dot">•••</span>
+      <span>RIDE OR DIE</span><span class="dot">•••</span>
+      <span>25¢ TO MOON</span><span class="dot">•••</span>
+      <span>STRAP IN</span><span class="dot">•••</span>
+      <!-- duplicate for seamless loop -->
+      <span>$RIDE</span><span class="dot">•••</span>
+      <span>GOT SOME CHANGE?</span><span class="dot">•••</span>
+      <span>SOLANA</span><span class="dot">•••</span>
+      <span>RIDE OR DIE</span><span class="dot">•••</span>
+      <span>25¢ TO MOON</span><span class="dot">•••</span>
+      <span>STRAP IN</span><span class="dot">•••</span>
+    </div>
+  </div>
+
+  <!-- CONTRACT ADDRESS -->
+  <div id="contract">
+    <p class="receipt-header">📋 Contract Address</p>
+    <div class="ca-box">
+      <span class="ca-text" id="ca-value">2AUFGMvx1bJdh42yR8j7Kji39TCcfnf1bSGqHxc7pump</span>
+      <button class="copy-btn" id="copyBtn" onclick="copyCA()">COPY</button>
+    </div>
+  </div>
+
+  <div class="shelf-divider"></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-wrap">
+      <div class="about-grid">
+        <div class="about-body reveal">
+          <span class="section-aisle">Aisle 01 — The Story</span>
+          <h2 class="section-title">Born in<br><em>Aisle 9</em></h2>
+          <p>1991. A fluorescent-lit supermarket. A coin-op pony bolted to the linoleum floor. <strong>Career Opportunities</strong> gave the world a scene nobody could forget.</p>
+          <p>Thirty years later, TikTok and X found it. The internet went to work — every celeb, every meme lord, every world leader. All riding the same orange pony under the same cold lights. <strong>The meme that wouldn't die.</strong></p>
+          <p>$RIDE was inevitable. Drop your quarters. 🪙</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="shelf-divider"></div>
+
+  <!-- VIDEOS -->
+  <section id="videos">
+    <div class="section-wrap" style="max-width:1400px;">
+      <span class="section-aisle reveal">Aisle 02 — The Memes</span>
+      <h2 class="section-title reveal">Ride <em>Gallery</em></h2>
+
+      <div class="video-grid">
+        <!-- Video 1: Featured wide -->
+        <div class="video-card featured" data-label="Clip 01 — The OG Ride">
+          <video autoplay muted loop playsinline>
+            <source src="videos/ride1.mp4" type="video/mp4" />
+          </video>
+          <div class="video-placeholder" style="display:none">
+            <span class="vp-icon">🐎</span><p>ride1.mp4</p>
+          </div>
+        </div>
+        <!-- Videos 2–8 -->
+        <div class="video-card" data-label="Clip 02">
+          <video autoplay muted loop playsinline><source src="videos/ride2.mp4" type="video/mp4" /></video>
+          <div class="video-placeholder" style="display:none"><span class="vp-icon">🎠</span><p>ride2.mp4</p></div>
+        </div>
+        <div class="video-card" data-label="Clip 03">
+          <video autoplay muted loop playsinline><source src="videos/ride3.mp4" type="video/mp4" /></video>
+          <div class="video-placeholder" style="display:none"><span class="vp-icon">🪙</span><p>ride3.mp4</p></div>
+        </div>
+        <div class="video-card" data-label="Clip 04">
+          <video autoplay muted loop playsinline><source src="videos/ride4.mp4" type="video/mp4" /></video>
+          <div class="video-placeholder" style="display:none"><span class="vp-icon">🔥</span><p>ride4.mp4</p></div>
+        </div>
+        <div class="video-card" data-label="Clip 05">
+          <video autoplay muted loop playsinline><source src="videos/ride5.mp4" type="video/mp4" /></video>
+          <div class="video-placeholder" style="display:none"><span class="vp-icon">🌕</span><p>ride5.mp4</p></div>
+        </div>
+        <div class="video-card" data-label="Clip 06">
+          <video autoplay muted loop playsinline><source src="videos/ride6.mp4" type="video/mp4" /></video>
+          <div class="video-placeholder" style="display:none"><span class="vp-icon">🤠</span><p>ride6.mp4</p></div>
+        </div>
+        <div class="video-card" data-label="Clip 07">
+          <video autoplay muted loop playsinline><source src="videos/ride7.mp4" type="video/mp4" /></video>
+          <div class="video-placeholder" style="display:none"><span class="vp-icon">⚡</span><p>ride7.mp4</p></div>
+        </div>
+        <div class="video-card" data-label="Clip 08">
+          <video autoplay muted loop playsinline><source src="videos/ride8.mp4" type="video/mp4" /></video>
+          <div class="video-placeholder" style="display:none"><span class="vp-icon">💎</span><p>ride8.mp4</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="shelf-divider"></div>
+
+  <!-- HOW TO BUY -->
+  <section id="howtobuy">
+    <div class="section-wrap">
+      <span class="section-aisle reveal">Aisle 03 — How to Ride</span>
+      <h2 class="section-title reveal">How to <em>Ride</em></h2>
+      <div class="steps reveal-children">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-icon">👛</div>
+          <h3>Get a Wallet</h3>
+          <p>Download <strong>Phantom</strong> or <strong>Solflare</strong>. Create your wallet. Guard your seed phrase like the last quarter in the machine.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-icon">⚡</div>
+          <h3>Get Some SOL</h3>
+          <p>Buy SOL on Coinbase, Binance, or any exchange. Send it to your Phantom wallet address.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-icon">🔄</div>
+          <h3>Swap on Jupiter</h3>
+          <p>Head to <strong>jup.ag</strong>. Paste the $RIDE contract address. Swap your SOL. Done.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-icon">🐎</div>
+          <h3>Strap In</h3>
+          <p>You're on the pony now. The coin-op never stops. <strong>Ride or die.</strong> 🪙</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY -->
+  <section id="community">
+    <span class="section-aisle" style="background:var(--price-yellow);color:var(--dark);">Aisle 04 — Community</span>
+    <h2 class="section-title reveal" style="margin-top:1rem;">Join the <em>Herd</em></h2>
+    <p>The riders are gathering under the fluorescent lights. The pony is warming up. Drop your quarters and get in before this thing gallops away.</p>
+    <div class="community-btns reveal">
+      <a href="https://twitter.com/i/communities/2032668023245647904" target="_blank" rel="noopener" class="btn btn-white">🐦 X Community</a>
+      <a href="#howtobuy" class="btn btn-outline-white">🪙 Buy $RIDE</a>
+    </div>
+  </section>
+
+
+
+  <script>
+    // ── COPY CA ──
+    function copyCA() {
+      const ca = document.getElementById('ca-value').textContent.trim();
+      navigator.clipboard.writeText(ca).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'COPIED!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'COPY';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // ── SCROLL REVEAL ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => {
+        if (el.isIntersecting) {
+          el.target.classList.add('visible');
+          observer.unobserve(el.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal, .reveal-children').forEach(el => observer.observe(el));
+
+    // ── VIDEO FALLBACK ──
+    document.querySelectorAll('.video-card video').forEach(vid => {
+      vid.addEventListener('error', () => {
+        const card = vid.closest('.video-card');
+        vid.style.display = 'none';
+        const ph = card.querySelector('.video-placeholder');
+        if (ph) ph.style.display = 'flex';
+      });
+    });
+  </script>
+
+</body>
+</html>
