@@ -928,37 +928,33 @@
     document.querySelectorAll('.reveal, .reveal-children').forEach(el => observer.observe(el));
 
     // ── VIDEO LAZY LOAD + MOBILE AUTOPLAY FIX ──
-    const videoObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const vid = entry.target;
-        if (entry.isIntersecting) {
-          // Set src only when video is visible
-          const source = vid.querySelector('source');
-          if (source && !vid.src && source.src) {
-            vid.load();
-          }
-          const playPromise = vid.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(() => {
-              // Autoplay blocked — show play button overlay
-              const card = vid.closest('.video-card');
-              card.classList.add('paused');
-              card.addEventListener('click', () => {
-                vid.play();
-                card.classList.remove('paused');
-              }, { once: true });
-            });
-          }
-        } else {
-          vid.pause();
-        }
-      });
-    }, { threshold: 0.2 });
-
     document.querySelectorAll('.video-card video').forEach(vid => {
       vid.muted = true;
+      vid.loop = true;
       vid.playsInline = true;
-      videoObserver.observe(vid);
+      vid.preload = 'auto';
+
+      const tryPlay = () => {
+        const playPromise = vid.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            const card = vid.closest('.video-card');
+            card.classList.add('paused');
+            card.addEventListener('click', () => {
+              vid.play();
+              card.classList.remove('paused');
+            }, { once: true });
+          });
+        }
+      };
+
+      // Try playing once enough data is loaded
+      vid.addEventListener('canplay', tryPlay, { once: true });
+      vid.load();
+
+      // If it stalls, resume
+      vid.addEventListener('stalled', () => { vid.load(); tryPlay(); });
+      vid.addEventListener('waiting', () => { tryPlay(); });
 
       vid.addEventListener('error', () => {
         const card = vid.closest('.video-card');
