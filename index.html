@@ -496,6 +496,20 @@
 
     .video-card:hover::after { opacity: 1; }
 
+    .video-card.paused::before {
+      content: '▶';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #fff;
+      background: rgba(0,0,0,0.35);
+      z-index: 2;
+      cursor: pointer;
+    }
+
     .video-placeholder {
       width: 100%;
       height: 100%;
@@ -913,8 +927,39 @@
 
     document.querySelectorAll('.reveal, .reveal-children').forEach(el => observer.observe(el));
 
-    // ── VIDEO FALLBACK ──
+    // ── VIDEO LAZY LOAD + MOBILE AUTOPLAY FIX ──
+    const videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const vid = entry.target;
+        if (entry.isIntersecting) {
+          // Set src only when video is visible
+          const source = vid.querySelector('source');
+          if (source && !vid.src && source.src) {
+            vid.load();
+          }
+          const playPromise = vid.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              // Autoplay blocked — show play button overlay
+              const card = vid.closest('.video-card');
+              card.classList.add('paused');
+              card.addEventListener('click', () => {
+                vid.play();
+                card.classList.remove('paused');
+              }, { once: true });
+            });
+          }
+        } else {
+          vid.pause();
+        }
+      });
+    }, { threshold: 0.2 });
+
     document.querySelectorAll('.video-card video').forEach(vid => {
+      vid.muted = true;
+      vid.playsInline = true;
+      videoObserver.observe(vid);
+
       vid.addEventListener('error', () => {
         const card = vid.closest('.video-card');
         vid.style.display = 'none';
